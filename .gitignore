@@ -1,0 +1,8 @@
+node_modules/
+.npm-cache/
+dist/
+qa-*.png
+qa-*.jpg
+public/images/*.png
+.env
+.env.*
