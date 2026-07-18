@@ -18,6 +18,7 @@ import {
 } from "@phosphor-icons/react";
 
 const PHONE = "79141999233";
+const assetUrl = (path) => `${import.meta.env.BASE_URL}${path}`;
 
 const products = [
   {
@@ -26,7 +27,7 @@ const products = [
       "Савоярди, насыщенный кофе и нежный крем из настоящего маскарпоне.",
     price: "1 200 ₽",
     weight: "600 г",
-    image: "/images/tiramisu.webp",
+    image: assetUrl("images/tiramisu.webp"),
   },
   {
     name: "Прага с пралине",
@@ -34,7 +35,7 @@ const products = [
       "Шоколадные коржи, ганаш и хрустящий слой фундука ручной обжарки.",
     price: "1 650 ₽",
     weight: "700 г",
-    image: "/images/praline.webp",
+    image: assetUrl("images/praline.webp"),
   },
   {
     name: "Павлова с ягодами",
@@ -42,7 +43,7 @@ const products = [
       "Хрустящая меренга, воздушный крем и свежие сезонные ягоды.",
     price: "950 ₽",
     weight: "500 г",
-    image: "/images/pavlova.webp",
+    image: assetUrl("images/pavlova.webp"),
   },
 ];
 
@@ -211,7 +212,7 @@ function App() {
 
         <section className="about" id="about">
           <div className="about-photo" data-reveal>
-            <img src="/images/elena-workshop.webp" alt="Елена Кинаш готовит десерты в своей мастерской" />
+            <img src={assetUrl("images/elena-workshop.webp")} alt="Елена Кинаш готовит десерты в своей мастерской" />
           </div>
           <div className="about-copy" data-reveal>
             <p className="eyebrow">О мастере</p>

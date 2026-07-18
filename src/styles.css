@@ -73,7 +73,7 @@ h2 { font-size: clamp(2.8rem, 5vw, 5rem); font-weight: 500; line-height: .95; }
 .menu-toggle { display: none; background: transparent; border: 0; color: white; padding: 12px; }
 
 .hero { min-height: 760px; background: var(--dark); color: white; position: relative; overflow: hidden; }
-.hero-image { position: absolute; inset: 0; background: url("/images/hero-chocolate-cake.webp") center/cover no-repeat; }
+.hero-image { position: absolute; inset: 0; background: url("../images/hero-chocolate-cake.webp") center/cover no-repeat; }
 .hero-image::after { content: ""; position: absolute; inset: 0; background: rgba(0,0,0,.18); }
 .hero-content { position: relative; z-index: 2; width: min(790px, 56%); padding: 158px 0 72px clamp(28px, 5vw, 84px); }
 .eyebrow { color: var(--gold); letter-spacing: .24em; text-transform: uppercase; font-size: 11px; font-weight: 600; }
@@ -122,7 +122,7 @@ h2 { font-size: clamp(2.8rem, 5vw, 5rem); font-weight: 500; line-height: .95; }
 .feature-list svg { flex: 0 0 26px; height: 26px; color: #aa7945; }
 
 .gifting { position: relative; min-height: 480px; background: #130c09; color: white; overflow: hidden; }
-.gifting-image { position: absolute; inset: 0; background: url("/images/gift-box.webp") center/cover no-repeat; }
+.gifting-image { position: absolute; inset: 0; background: url("../images/gift-box.webp") center/cover no-repeat; }
 .gifting-image::after { content: ""; position: absolute; inset: 0; background: rgba(0,0,0,.23); }
 .gifting-copy { position: relative; padding: 75px clamp(24px, 5vw, 84px); max-width: 560px; z-index: 2; }
 .gifting h2 { margin-bottom: 24px; }
@@ -149,7 +149,7 @@ blockquote:last-child { border-right: 0; }
 blockquote p { min-height: 96px; color: #554b45; font-family: "Cormorant Garamond", serif; font-size: 20px; line-height: 1.45; margin-top: 20px; }
 blockquote cite { font-style: normal; font-size: 12px; color: var(--muted); }
 
-.final-cta { min-height: 480px; color: white; display: grid; align-items: center; padding: 70px clamp(24px, 6vw, 95px); background: #120b08 url("/images/hero-chocolate-cake.webp") 78% 52%/60% auto no-repeat; }
+.final-cta { min-height: 480px; color: white; display: grid; align-items: center; padding: 70px clamp(24px, 6vw, 95px); background: #120b08 url("../images/hero-chocolate-cake.webp") 78% 52%/60% auto no-repeat; }
 .final-cta > div { max-width: 600px; }
 .final-cta h2 { margin-bottom: 26px; }
 .final-cta p:not(.eyebrow) { color: #d7ccc0; line-height: 1.65; max-width: 500px; margin-bottom: 28px; }
