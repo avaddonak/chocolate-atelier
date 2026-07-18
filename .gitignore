@@ -7,3 +7,4 @@ qa-*.jpg
 public/images/*.png
 .env
 .env.*
+!.env.example
