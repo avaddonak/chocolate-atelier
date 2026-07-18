@@ -16,11 +16,12 @@ import {
   WhatsappLogo,
   X,
 } from "@phosphor-icons/react";
+import { loadProducts, saveOrder } from "./supabase.js";
 
 const PHONE = "79141999233";
 const assetUrl = (path) => `${import.meta.env.BASE_URL}${path}`;
 
-const products = [
+const fallbackProducts = [
   {
     name: "Тирамису «Мой хит!»",
     description:
@@ -76,6 +77,24 @@ function App() {
   const [selectedProduct, setSelectedProduct] = useState("");
   const [orderOpen, setOrderOpen] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [products, setProducts] = useState(fallbackProducts);
+  const [orderData, setOrderData] = useState(null);
+  const [submitError, setSubmitError] = useState("");
+
+  useEffect(() => {
+    loadProducts()
+      .then((items) => {
+        if (!items?.length) return;
+        setProducts(items.map((item) => ({
+          ...item,
+          price: `${Number(item.price).toLocaleString("ru-RU")} ₽`,
+          image: item.image_url.startsWith("http")
+            ? item.image_url
+            : assetUrl(item.image_url.replace(/^\/+/, "")),
+        })));
+      })
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     const nodes = document.querySelectorAll("[data-reveal]");
@@ -107,10 +126,35 @@ function App() {
 
   const closeOrder = () => setOrderOpen(false);
 
-  const submitOrder = (event) => {
+  const submitOrder = async (event) => {
     event.preventDefault();
+    setSubmitError("");
+    const form = new FormData(event.currentTarget);
+    const order = {
+      customer_name: String(form.get("name") || "").trim(),
+      customer_phone: String(form.get("phone") || "").trim(),
+      product_name: selectedProduct,
+      desired_date: form.get("date") || null,
+      comment: String(form.get("comment") || "").trim() || null,
+    };
+    try {
+      await saveOrder(order);
+    } catch {
+      setSubmitError("Не удалось сохранить заявку, но вы всё равно можете отправить её через WhatsApp.");
+    }
+    setOrderData(order);
     setSubmitted(true);
   };
+
+  const whatsappMessage = orderData
+    ? [
+        `Здравствуйте! Меня зовут ${orderData.customer_name}.`,
+        `Хочу заказать: ${orderData.product_name}.`,
+        orderData.desired_date ? `Желаемая дата: ${orderData.desired_date}.` : "",
+        orderData.customer_phone ? `Телефон: ${orderData.customer_phone}.` : "",
+        orderData.comment ? `Комментарий: ${orderData.comment}` : "",
+      ].filter(Boolean).join("\n")
+    : "Здравствуйте! Хочу заказать десерт.";
 
   return (
     <>
@@ -313,9 +357,10 @@ function App() {
                 <p className="eyebrow">Заявка готова</p>
                 <h2 id="order-title">Спасибо!</h2>
                 <p>Для завершения заказа отправьте подготовленное сообщение Елене в WhatsApp.</p>
+                {submitError && <p className="form-error">{submitError}</p>}
                 <a
                   className="button"
-                  href={`https://wa.me/${PHONE}?text=${encodeURIComponent(`Здравствуйте! Хочу оформить заказ${selectedProduct ? `: ${selectedProduct}` : ""}.`)}`}
+                  href={`https://wa.me/${PHONE}?text=${encodeURIComponent(whatsappMessage)}`}
                   target="_blank"
                   rel="noreferrer"
                 >
@@ -329,6 +374,7 @@ function App() {
                 <p>Оставьте детали — на следующем шаге откроется WhatsApp с готовым сообщением.</p>
                 <form onSubmit={submitOrder}>
                   <label>Ваше имя<input name="name" autoComplete="name" required /></label>
+                  <label>Телефон<input name="phone" type="tel" autoComplete="tel" placeholder="+7 999 000-00-00" required /></label>
                   <label>Что хотите заказать
                     <select value={selectedProduct} onChange={(event) => setSelectedProduct(event.target.value)} required>
                       <option value="">Помогите выбрать</option>
@@ -337,6 +383,7 @@ function App() {
                     </select>
                   </label>
                   <label>Желаемая дата<input name="date" type="date" /></label>
+                  <label>Комментарий<textarea name="comment" rows="3" placeholder="Пожелания по оформлению, доставке или составу" /></label>
                   <button className="button" type="submit">Продолжить <ArrowRight aria-hidden="true" /></button>
                 </form>
               </>
