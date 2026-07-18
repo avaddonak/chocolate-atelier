@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build && node scripts/prepare-sites.mjs",
-    "build:pages": "vite build",
+    "build:pages": "vite build --base=/chocolate-atelier/",
     "preview": "vite preview"
   },
   "dependencies": {
