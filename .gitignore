@@ -1,6 +1,7 @@
 node_modules/
 .npm-cache/
 dist/
+*.tar.gz
 qa-*.png
 qa-*.jpg
 public/images/*.png
