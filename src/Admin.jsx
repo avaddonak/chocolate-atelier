@@ -144,11 +144,30 @@ export function Admin() {
           {orders.length === 0 && <p>Новых заявок пока нет.</p>}
           {orders.map((order) => (
             <article key={order.id}>
-              <strong>{order.customer_name}</strong>
-              <span>{order.product_name}</span>
-              <span>{order.desired_date || "Дата не указана"}</span>
-              <span>{order.customer_phone || "Телефон не указан"}</span>
-              {order.comment && <p>{order.comment}</p>}
+              <div className="order-field">
+                <span>Клиент</span>
+                <strong>{order.customer_name}</strong>
+              </div>
+              <div className="order-field">
+                <span>Десерт</span>
+                <strong>{order.product_name}</strong>
+              </div>
+              <div className="order-field">
+                <span>Желаемая дата</span>
+                <strong>{order.desired_date || "Не указана"}</strong>
+              </div>
+              <div className="order-field">
+                <span>Телефон</span>
+                <a href={order.customer_phone ? `tel:${order.customer_phone}` : undefined}>
+                  {order.customer_phone || "Не указан"}
+                </a>
+              </div>
+              {order.comment && (
+                <div className="order-comment">
+                  <span>Комментарий</span>
+                  <p>{order.comment}</p>
+                </div>
+              )}
             </article>
           ))}
         </div>
