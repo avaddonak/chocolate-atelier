@@ -49,6 +49,22 @@ export function Admin() {
     setMessage(error ? error.message : "");
   };
 
+  const updatePassword = async (event) => {
+    event.preventDefault();
+    const form = new FormData(event.currentTarget);
+    const password = form.get("new-password");
+    const confirmation = form.get("password-confirmation");
+
+    if (password !== confirmation) {
+      setMessage("Пароли не совпадают");
+      return;
+    }
+
+    const { error } = await supabase.auth.updateUser({ password });
+    setMessage(error ? error.message : "Пароль сохранён");
+    if (!error) event.currentTarget.reset();
+  };
+
   const saveProduct = async (product) => {
     const { id, created_at, updated_at, ...payload } = product;
     const query = id
@@ -94,6 +110,16 @@ export function Admin() {
       </div>
 
       {message && <p className="admin-message"><Check /> {message}</p>}
+
+      <section className="admin-section">
+        <h2>Пароль администратора</h2>
+        <form className="admin-login" onSubmit={updatePassword}>
+          <p>При первом входе задайте пароль, который будете использовать в дальнейшем.</p>
+          <label>Новый пароль<input name="new-password" type="password" minLength="8" required /></label>
+          <label>Повторите пароль<input name="password-confirmation" type="password" minLength="8" required /></label>
+          <button className="button" type="submit">Сохранить пароль</button>
+        </form>
+      </section>
 
       <section className="admin-section">
         <h2>Десерты</h2>
