@@ -17,6 +17,7 @@ import {
   X,
 } from "@phosphor-icons/react";
 import { loadProducts, saveOrder } from "./supabase.js";
+import { LEGAL_VERSION } from "./Legal.jsx";
 
 const PHONE = "79141999233";
 const assetUrl = (path) => `${import.meta.env.BASE_URL}${path}`;
@@ -136,6 +137,9 @@ function App() {
       product_name: selectedProduct,
       desired_date: form.get("date") || null,
       comment: String(form.get("comment") || "").trim() || null,
+      consent_given_at: new Date().toISOString(),
+      consent_version: LEGAL_VERSION,
+      marketing_consent: form.get("marketing-consent") === "on",
     };
     try {
       await saveOrder(order);
@@ -304,6 +308,18 @@ function App() {
           </div>
         </section>
 
+        <section className="product-safety section" aria-labelledby="safety-title">
+          <div className="section-heading" data-reveal>
+            <p className="eyebrow">Важно знать</p>
+            <h2 id="safety-title">Состав и хранение</h2>
+          </div>
+          <div className="safety-grid">
+            <article><h3>Аллергены</h3><p>На производстве используются орехи, молочная продукция, яйца и шоколад. Возможны следовые количества аллергенов. При наличии аллергических реакций продукт употреблять не следует.</p></article>
+            <article><h3>Сроки хранения</h3><p>Точные условия и срок годности зависят от выбранного десерта и сообщаются при заказе. Общие рекомендации приведены в условиях заказа.</p><a href="#/terms">Посмотреть условия и сроки</a></article>
+            <article><h3>Получение заказа</h3><p>Доступен самовывоз в Мурино. Возможность и стоимость доставки рассчитываются индивидуально по адресу и согласовываются заранее.</p></article>
+          </div>
+        </section>
+
         <section className="reviews section" id="reviews" aria-labelledby="reviews-title">
           <div className="section-heading" data-reveal>
             <p className="eyebrow">Говорят клиенты</p>
@@ -338,9 +354,16 @@ function App() {
         </a>
         <div>
           <a href={`tel:+${PHONE}`}><Phone aria-hidden="true" /> +7 914 199-92-33</a>
-          <span><MapPin aria-hidden="true" /> Мурино, Воронцовский б-р, 19</span>
+          <span><MapPin aria-hidden="true" /> Мурино, Воронцовский б-р, д. 19, к. 1</span>
         </div>
-        <p>© 2026 Шоколадная мастерская Елены Кинаш</p>
+        <div className="footer-legal">
+          <a href="#/privacy">Политика конфиденциальности</a>
+          <a href="#/consent">Согласие на обработку данных</a>
+          <a href="#/terms">Условия заказа</a>
+          <a href="#/cookies">Cookie</a>
+          <a href="#/requisites">Реквизиты</a>
+        </div>
+        <p>© 2026 Шоколадная мастерская Елены Кинаш · Самозанятая Кинаш Е. В. · ИНН 272414761839</p>
       </footer>
 
       {orderOpen && (
@@ -384,6 +407,15 @@ function App() {
                   </label>
                   <label>Желаемая дата<input name="date" type="date" /></label>
                   <label>Комментарий<textarea name="comment" rows="3" placeholder="Пожелания по оформлению, доставке или составу" /></label>
+                  <label className="consent-check">
+                    <input name="personal-data-consent" type="checkbox" required />
+                    <span>Я даю отдельное <a href="#/consent" target="_blank">согласие на обработку персональных данных</a> и ознакомлен(а) с <a href="#/privacy" target="_blank">Политикой обработки персональных данных</a>.</span>
+                  </label>
+                  <label className="consent-check">
+                    <input name="marketing-consent" type="checkbox" />
+                    <span>Я согласен(на) получать информационные и рекламные сообщения. Согласие необязательно и может быть отозвано.</span>
+                  </label>
+                  <p className="order-note">Нажатие кнопки отправляет заявку оператору Кинаш Елене Викторовне. Условия заказа, оплаты, самовывоза и доставки доступны <a href="#/terms" target="_blank">по ссылке</a>.</p>
                   <button className="button" type="submit">Продолжить <ArrowRight aria-hidden="true" /></button>
                 </form>
               </>

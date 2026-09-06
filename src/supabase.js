@@ -24,6 +24,19 @@ export async function loadProducts() {
 export async function saveOrder(order) {
   if (!supabase) return { stored: false };
   const { error } = await supabase.from("orders").insert(order);
-  if (error) throw error;
+  if (error?.code === "PGRST204") {
+    const { consent_given_at, consent_version, marketing_consent, ...legacyOrder } = order;
+    const consentRecord = [
+      legacyOrder.comment,
+      `Согласие на обработку ПД: версия ${consent_version}, ${consent_given_at}.`,
+      `Согласие на сообщения: ${marketing_consent ? "да" : "нет"}.`,
+    ].filter(Boolean).join("\n\n");
+    const { error: legacyError } = await supabase
+      .from("orders")
+      .insert({ ...legacyOrder, comment: consentRecord });
+    if (legacyError) throw legacyError;
+  } else if (error) {
+    throw error;
+  }
   return { stored: true };
 }

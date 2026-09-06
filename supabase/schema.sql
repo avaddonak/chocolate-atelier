@@ -21,11 +21,18 @@ create table if not exists public.orders (
   desired_date date,
   comment text,
   status text not null default 'new',
+  consent_given_at timestamptz,
+  consent_version text,
+  marketing_consent boolean not null default false,
   created_at timestamptz not null default now()
 );
 
 alter table public.products enable row level security;
 alter table public.orders enable row level security;
+
+alter table public.orders add column if not exists consent_given_at timestamptz;
+alter table public.orders add column if not exists consent_version text;
+alter table public.orders add column if not exists marketing_consent boolean not null default false;
 
 create policy "Public can view active products"
 on public.products for select
