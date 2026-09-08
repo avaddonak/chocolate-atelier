@@ -2,6 +2,9 @@ import { createClient } from "@supabase/supabase-js";
 
 const url = import.meta.env.VITE_SUPABASE_URL;
 const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+const ordersApiUrl =
+  import.meta.env.VITE_ORDERS_API_URL ||
+  "https://d5damfj543i9uno4kbv1.0ly8ed4d.apigw.yandexcloud.net/orders";
 
 export const hasSupabase = Boolean(url && anonKey);
 export const supabase = hasSupabase
@@ -22,21 +25,31 @@ export async function loadProducts() {
 }
 
 export async function saveOrder(order) {
-  if (!supabase) return { stored: false };
-  const { error } = await supabase.from("orders").insert(order);
-  if (error?.code === "PGRST204") {
-    const { consent_given_at, consent_version, marketing_consent, ...legacyOrder } = order;
-    const consentRecord = [
-      legacyOrder.comment,
-      `Согласие на обработку ПД: версия ${consent_version}, ${consent_given_at}.`,
-      `Согласие на сообщения: ${marketing_consent ? "да" : "нет"}.`,
-    ].filter(Boolean).join("\n\n");
-    const { error: legacyError } = await supabase
-      .from("orders")
-      .insert({ ...legacyOrder, comment: consentRecord });
-    if (legacyError) throw legacyError;
-  } else if (error) {
-    throw error;
+  const response = await fetch(ordersApiUrl, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      ...order,
+      consent: true,
+      source: window.location.hostname || "website",
+    }),
+  });
+
+  const result = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    throw new Error(result.error || "Не удалось сохранить заявку");
   }
-  return { stored: true };
+
+  return { stored: true, id: result.id };
+}
+
+export async function loadOrders(adminToken) {
+  const response = await fetch(ordersApiUrl, {
+    headers: { Authorization: `Bearer ${adminToken}` },
+  });
+  const result = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    throw new Error(result.error || "Не удалось загрузить заявки");
+  }
+  return result.orders || [];
 }

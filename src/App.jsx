@@ -145,6 +145,7 @@ function App() {
       await saveOrder(order);
     } catch {
       setSubmitError("Не удалось сохранить заявку, но вы всё равно можете отправить её через WhatsApp.");
+      return;
     }
     setOrderData(order);
     setSubmitted(true);

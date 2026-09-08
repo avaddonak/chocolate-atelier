@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { ArrowLeft, Check, Plus, SignOut, Trash } from "@phosphor-icons/react";
-import { hasSupabase, supabase } from "./supabase.js";
+import { hasSupabase, loadOrders, supabase } from "./supabase.js";
 
 const blankProduct = {
   name: "",
@@ -16,13 +16,18 @@ export function Admin() {
   const [session, setSession] = useState(null);
   const [products, setProducts] = useState([]);
   const [orders, setOrders] = useState([]);
+  const [ordersToken, setOrdersToken] = useState(() => sessionStorage.getItem("orders-admin-token") || "");
+  const [ordersError, setOrdersError] = useState("");
   const [draft, setDraft] = useState(blankProduct);
   const [message, setMessage] = useState("");
 
   const refresh = async () => {
-    const [{ data: productData }, { data: orderData }] = await Promise.all([
+    const [{ data: productData }, orderData] = await Promise.all([
       supabase.from("products").select("*").order("sort_order"),
-      supabase.from("orders").select("*").order("created_at", { ascending: false }),
+      ordersToken ? loadOrders(ordersToken).catch((error) => {
+        setOrdersError(error.message);
+        return [];
+      }) : Promise.resolve([]),
     ]);
     setProducts(productData || []);
     setOrders(orderData || []);
@@ -37,7 +42,27 @@ export function Admin() {
 
   useEffect(() => {
     if (session) refresh();
-  }, [session]);
+  }, [session, ordersToken]);
+
+  const unlockOrders = async (event) => {
+    event.preventDefault();
+    const token = String(new FormData(event.currentTarget).get("orders-token") || "").trim();
+    setOrdersError("");
+    try {
+      const nextOrders = await loadOrders(token);
+      sessionStorage.setItem("orders-admin-token", token);
+      setOrdersToken(token);
+      setOrders(nextOrders);
+    } catch (error) {
+      setOrdersError(error.message);
+    }
+  };
+
+  const lockOrders = () => {
+    sessionStorage.removeItem("orders-admin-token");
+    setOrdersToken("");
+    setOrders([]);
+  };
 
   const login = async (event) => {
     event.preventDefault();
@@ -140,9 +165,23 @@ export function Admin() {
 
       <section className="admin-section">
         <h2>Заявки</h2>
-        <div className="admin-orders">
-          {orders.length === 0 && <p>Новых заявок пока нет.</p>}
-          {orders.map((order) => (
+        {!ordersToken ? (
+          <form className="admin-login" onSubmit={unlockOrders}>
+            <p>Введите отдельный ключ заявок. Он хранится только до закрытия браузера.</p>
+            <label>Ключ заявок<input name="orders-token" type="password" autoComplete="off" required /></label>
+            <button className="button" type="submit">Открыть заявки</button>
+            {ordersError && <p className="admin-message">{ordersError}</p>}
+          </form>
+        ) : (
+          <>
+            <div className="orders-toolbar">
+              <button className="admin-link" type="button" onClick={refresh}>Обновить заявки</button>
+              <button className="admin-link" type="button" onClick={lockOrders}>Закрыть доступ</button>
+            </div>
+            {ordersError && <p className="admin-message">{ordersError}</p>}
+            <div className="admin-orders">
+              {orders.length === 0 && <p>Новых заявок пока нет.</p>}
+              {orders.map((order) => (
             <article key={order.id}>
               <div className="order-field">
                 <span>Клиент</span>
@@ -169,8 +208,10 @@ export function Admin() {
                 </div>
               )}
             </article>
-          ))}
-        </div>
+              ))}
+            </div>
+          </>
+        )}
       </section>
     </AdminShell>
   );

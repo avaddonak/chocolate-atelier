@@ -214,6 +214,7 @@ footer > p { grid-column: 1/-1; margin: 8px 0 0; padding-top: 22px; border-top: 
 .danger-button { color: #9b2f25; padding: 10px; }
 .admin-message { display: flex; gap: 8px; align-items: center; color: #416a3c; }
 .admin-orders { display: grid; gap: 16px; max-width: 1240px; }
+.orders-toolbar { display: flex; flex-wrap: wrap; gap: 22px; margin: 0 0 22px; }
 .admin-orders article {
   background: #fffdf8;
   border: 1px solid rgba(164, 139, 99, .18);
