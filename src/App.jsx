@@ -16,7 +16,7 @@ import {
   WhatsappLogo,
   X,
 } from "@phosphor-icons/react";
-import { loadProducts, saveOrder } from "./supabase.js";
+import { loadProducts, saveOrder } from "./api.js";
 import { LEGAL_VERSION } from "./Legal.jsx";
 
 const PHONE = "79141999233";
@@ -89,9 +89,9 @@ function App() {
         setProducts(items.map((item) => ({
           ...item,
           price: `${Number(item.price).toLocaleString("ru-RU")} ₽`,
-          image: item.image_url.startsWith("http")
+          image: item.image_data || (item.image_url?.startsWith("http")
             ? item.image_url
-            : assetUrl(item.image_url.replace(/^\/+/, "")),
+            : assetUrl((item.image_url || "images/tiramisu.webp").replace(/^\/+/, ""))),
         })));
       })
       .catch(() => {});

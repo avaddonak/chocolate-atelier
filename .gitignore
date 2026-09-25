@@ -1,6 +1,7 @@
 node_modules/
 .npm-cache/
 dist/
+cloud-function/function.zip
 *.tar.gz
 qa-*.png
 qa-*.jpg

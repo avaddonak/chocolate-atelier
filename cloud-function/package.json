@@ -1,0 +1,11 @@
+{
+  "name": "chocolate-atelier-api",
+  "version": "2.0.0",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@ydbjs/auth": "latest",
+    "@ydbjs/core": "latest",
+    "@ydbjs/query": "latest"
+  }
+}
